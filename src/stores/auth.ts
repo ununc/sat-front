@@ -1,4 +1,4 @@
-import type { Auth } from "@/apis/auth/login";
+import type { Auth } from "@/apis/login";
 import { create } from "zustand";
 
 interface CounterState {

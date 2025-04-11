@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { requestLogin } from "@/apis/auth/login";
+import { requestLogin } from "@/apis/login";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -117,11 +117,7 @@ export default function LoginPage() {
             </div>
           </CardContent>
           <CardFooter className="mt-8">
-            <Button
-              type="submit"
-              className="w-full cursor-pointer"
-              disabled={isLoading}
-            >
+            <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? "로그인 중..." : "로그인"}
             </Button>
           </CardFooter>
