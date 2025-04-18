@@ -1,24 +1,29 @@
+import { useState, useEffect } from "react";
 import {
-  type CreateModuleDto,
-  requestGetModules,
-  type Module,
-  requestDeleteModule,
-} from "@/apis/module";
-import MDetail from "@/components/module/MDetail";
-import { MEdit } from "@/components/module/MEdit";
-import { MFilter } from "@/components/module/MFilter";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+  AlertCircle,
+  ArrowUpDown,
+  ChevronLeft,
+  ClipboardPlus,
+  Edit3Icon,
+  PlusCircle,
+  Trash,
+  X,
+} from "lucide-react";
+import { useNavigate } from "react-router-dom";
+
 import {
-  AlertDialogFooter,
-  AlertDialogHeader,
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
+
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+
 import {
   Card,
   CardContent,
@@ -36,88 +41,86 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
 import {
-  AlertCircle,
-  ArrowUpDown,
-  ChevronLeft,
-  Edit3Icon,
-  EyeIcon,
-  PlusCircle,
-  Trash,
-  X,
-} from "lucide-react";
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+  CreateStudentDto,
+  Exams,
+  requestDeleteStudent,
+  requestGetStudents,
+  Student,
+} from "@/apis/admin-menu/students";
+import { StudentEdit } from "@/components/student/StudentEdit";
+import { ExamEdit } from "@/components/student/ExamEdit";
 
 interface AlertState {
   show: boolean;
   missingFields: string[];
 }
 
-export const ModulePage = () => {
+export const StudentPage = () => {
   const [showCreateDialog, setShowCreateDialog] = useState<
     "create" | "edit" | null
   >(null);
-
   const [searchTerm, setSearchTerm] = useState("");
-  const [searchInTitle, setSearchInTitle] = useState(true);
-  const [searchInDescription, setSearchInDescription] = useState(false);
-  const [filterSection, setFilterSection] = useState<string>("all");
-  const [filterLevel, setFilterLevel] = useState<string>("all");
-  const [sortOrder, setSortOrder] = useState<string>("desc");
-  const [modules, setModules] = useState<Module[]>([]);
+  const [sortOrder, setSortOrder] = useState("desc");
+  const [students, setStudents] = useState<Student[]>([]);
   const [deleteItem, setDeleteItem] = useState<{
     title: string;
     uid: string;
   } | null>(null);
-
-  const [newModule, setNewModule] = useState<CreateModuleDto>({
-    title: "",
-    section: "",
-    level: 3,
-    description: "",
-    questions: [],
+  const [newStudent, setNewStudent] = useState<CreateStudentDto>({
+    id: "",
+    name: "",
+    startTime: "16:00",
+    endTime: "20:00",
+    role: "student",
+    exams: [],
   });
-
   const [alert, setAlert] = useState<AlertState>({
     show: false,
     missingFields: [],
   });
-
-  const [currentModule, setCurrentModule] = useState<Module | null>(null);
-  const [showDetailDialog, setShowDetailDialog] = useState(false);
+  const [showEditExam, setShowEditExam] = useState<Student | null>(null);
+  const [newStudentExam, setNewStudentExam] = useState<Exams[]>([]);
 
   const navigate = useNavigate();
 
   const getFieldDisplayName = (field: string) => {
     const fieldMap: Record<string, string> = {
-      title: "제목",
-      section: "섹션",
-      level: "레벨",
+      id: "학생 ID",
+      name: "이름",
+      startTime: "시작 시간",
+      endTime: "종료 시간",
     };
 
     return fieldMap[field] || field;
   };
 
-  const handleViewDetail = (module: Module) => {
-    setCurrentModule(module);
-    setShowDetailDialog(true);
-  };
-
-  const handleEdit = (module: Module) => {
-    const moduleWithQuestionIds = {
-      ...module,
-      // questions 배열의 각 Question 객체에서 uid만 추출
-      questions: module.questions.map((question) => question.uid),
+  const handleEdit = (student: Student) => {
+    const item = {
+      ...student,
+      endTime: student.endTime.slice(0, -3),
+      startTime: student.startTime.slice(0, -3),
     };
-    setNewModule(moduleWithQuestionIds);
+    setNewStudent(item);
     setShowCreateDialog("edit");
   };
 
-  const handleDelete = (module: Module) => {
+  const handleOpenExamSetting = (student: Student) => {
+    const newExams = student.exams.map((item) => ({
+      ...item,
+    }));
+    setShowEditExam(student);
+    setNewStudentExam(newExams);
+  };
+
+  const handleDelete = (student: Student) => {
     setDeleteItem({
-      title: module.title,
-      uid: module.uid,
+      title: student.name,
+      uid: student.uid,
     });
   };
 
@@ -127,32 +130,34 @@ export const ModulePage = () => {
 
   const handleClickDelete = async () => {
     if (!deleteItem) return;
-    await requestDeleteModule(deleteItem.uid);
-    setModules((prevModules) =>
-      prevModules.filter((module) => module.uid !== deleteItem.uid)
+    await requestDeleteStudent(deleteItem.uid);
+    setStudents((prevStudents) =>
+      prevStudents.filter((student) => student.uid !== deleteItem.uid)
     );
     setDeleteItem(null);
   };
 
-  const filteredAndSortedModules = modules
-    .filter((module) => {
+  const handleAddNew = () => {
+    setShowCreateDialog("create");
+    setNewStudent({
+      id: "",
+      name: "",
+      startTime: "16:00",
+      endTime: "20:00",
+      role: "student",
+      exams: [],
+    });
+  };
+
+  const filteredAndSortedStudents = students
+    .filter((student) => {
       // 검색어 필터링
       const searchTermLower = searchTerm.toLowerCase();
       const matchesSearch =
-        (searchInTitle &&
-          module.title.toLowerCase().includes(searchTermLower)) ||
-        (searchInDescription &&
-          module.description.toLowerCase().includes(searchTermLower));
+        student.name.toLowerCase().includes(searchTermLower) ||
+        student.id.toLowerCase().includes(searchTermLower);
 
-      // 섹션 필터링
-      const matchesSection =
-        filterSection === "all" ? true : module.section === filterSection;
-
-      // 난이도 필터링
-      const matchesLevel =
-        filterLevel === "all" ? true : module.level === parseInt(filterLevel);
-
-      return matchesSearch && matchesSection && matchesLevel;
+      return matchesSearch;
     })
     .sort((a, b) => {
       // 생성일 기준 정렬
@@ -170,10 +175,10 @@ export const ModulePage = () => {
   useEffect(() => {
     (async () => {
       try {
-        const data = await requestGetModules();
-        setModules(data);
+        const data = await requestGetStudents();
+        setStudents(data);
       } catch (error) {
-        console.error("질문을 가져오는 중 오류 발생:", error);
+        console.error("학생 데이터를 가져오는 중 오류 발생:", error);
       }
     })();
   }, []);
@@ -189,52 +194,64 @@ export const ModulePage = () => {
         <ChevronLeft className="h-4 w-4" />
         뒤로가기
       </Button>
+
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-3xl font-bold mb-2">모듈 관리</h1>
+          <h1 className="text-3xl font-bold mb-2">학생 관리</h1>
           <p className="text-muted-foreground">
-            모듈을 생성하고 수정하며, 목록을 확인하고 검색하세요
+            학생을 추가, 편집, 검색하고 관리하세요
           </p>
         </div>
-        <Button
-          onClick={() => setShowCreateDialog("create")}
-          className="flex items-center gap-2"
-        >
+        <Button onClick={handleAddNew} className="flex items-center gap-2">
           <PlusCircle className="h-4 w-4" />
-          모듈 생성하기
+          학생 추가하기
         </Button>
       </div>
 
-      <MFilter
-        setSearchTerm={setSearchTerm}
-        setSearchInTitle={setSearchInTitle}
-        setSearchInDescription={setSearchInDescription}
-        setFilterSection={setFilterSection}
-        setFilterLevel={setFilterLevel}
-        setSortOrder={setSortOrder}
-        searchTerm={searchTerm}
-        searchInTitle={searchInTitle}
-        searchInDescription={searchInDescription}
-        filterSection={filterSection}
-        filterLevel={filterLevel}
-        sortOrder={sortOrder}
-        modules={modules}
-      />
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>검색 및 필터</CardTitle>
+          <CardDescription>
+            이름 또는 ID로 학생을 검색하고 다양한 기준으로 필터링하세요
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div>
+            <Label htmlFor="search" className="mb-2 block">
+              검색어
+            </Label>
+            <Input
+              id="search"
+              placeholder="이름 또는 ID로 검색"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+        </CardContent>
+      </Card>
 
-      <MEdit
-        newModule={newModule}
-        setNewModule={setNewModule}
+      <StudentEdit
+        newStudent={newStudent}
+        setNewStudent={setNewStudent}
         setAlert={setAlert}
-        setModules={setModules}
+        setStudents={setStudents}
         showCreateDialog={showCreateDialog}
         setShowCreateDialog={setShowCreateDialog}
       />
 
+      <ExamEdit
+        newStudentExam={newStudentExam}
+        setNewStudentExam={setNewStudentExam}
+        showEditExam={showEditExam}
+        setShowEditExam={setShowEditExam}
+        setStudents={setStudents}
+      />
+
       <Card>
         <CardHeader>
-          <CardTitle>모듈 목록</CardTitle>
+          <CardTitle>학생 목록</CardTitle>
           <CardDescription>
-            총 {filteredAndSortedModules.length}개의 모듈이 있습니다.
+            총 {filteredAndSortedStudents.length}명의 학생이 있습니다.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -242,10 +259,9 @@ export const ModulePage = () => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-24">섹션</TableHead>
-                  <TableHead>제목</TableHead>
-                  <TableHead>설명</TableHead>
-                  <TableHead className="w-28">난이도</TableHead>
+                  <TableHead>학생 ID</TableHead>
+                  <TableHead>이름</TableHead>
+                  <TableHead className="w-32">로그인 가능 시간</TableHead>
                   <TableHead className="w-28">
                     <div className="flex items-center">
                       생성일
@@ -261,58 +277,52 @@ export const ModulePage = () => {
                       </Button>
                     </div>
                   </TableHead>
-                  <TableHead className="w-24 text-center">액션</TableHead>
+                  <TableHead className="w-22 text-center">시험 설정</TableHead>
+                  <TableHead className="w-28 text-center">액션</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredAndSortedModules.length === 0 ? (
+                {filteredAndSortedStudents.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={7} className="h-24 text-center">
                       검색 결과가 없습니다.
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filteredAndSortedModules.map((module) => (
-                    <TableRow key={module.uid}>
-                      <TableCell>{module.section}</TableCell>
-                      <TableCell>{module.title}</TableCell>
-                      <TableCell>{module.description}</TableCell>
+                  filteredAndSortedStudents.map((student) => (
+                    <TableRow key={student.uid}>
+                      <TableCell>{student.id}</TableCell>
+                      <TableCell>{student.name}</TableCell>
                       <TableCell>
-                        <div className="flex items-center">
-                          {Array.from({ length: 5 }).map((_, i) => (
-                            <span
-                              key={i}
-                              className={`w-2 h-2 rounded-full mr-1 ${
-                                i < module.level ? "bg-primary" : "bg-muted"
-                              }`}
-                            />
-                          ))}
-                        </div>
+                        {student.startTime.slice(0, -3)} -{" "}
+                        {student.endTime.slice(0, -3)}
                       </TableCell>
+
                       <TableCell>
-                        {new Date(module.createdAt).toLocaleDateString()}
+                        {new Date(student.createdAt).toLocaleDateString()}
                       </TableCell>
-                      <TableCell className="text-right">
+                      <TableCell className="text-center">
                         <Button
-                          className="mr-2"
                           variant="ghost"
                           size="icon"
-                          onClick={() => handleViewDetail(module)}
+                          onClick={() => handleOpenExamSetting(student)}
                         >
-                          <EyeIcon className="h-4 w-4" />
+                          <ClipboardPlus className="h-4 w-4" />
                         </Button>
+                      </TableCell>
+                      <TableCell className="text-center">
                         <Button
                           className="mr-2"
                           variant="ghost"
                           size="icon"
-                          onClick={() => handleEdit(module)}
+                          onClick={() => handleEdit(student)}
                         >
                           <Edit3Icon className="h-4 w-4" />
                         </Button>
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => handleDelete(module)}
+                          onClick={() => handleDelete(student)}
                         >
                           <Trash className="h-4 w-4" />
                         </Button>
@@ -326,12 +336,6 @@ export const ModulePage = () => {
         </CardContent>
       </Card>
 
-      <MDetail
-        showDetailDialog={showDetailDialog}
-        setShowDetailDialog={setShowDetailDialog}
-        currentModule={currentModule}
-      />
-
       {deleteItem && (
         <AlertDialog
           open={deleteItem !== null}
@@ -339,9 +343,9 @@ export const ModulePage = () => {
         >
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>모듈 삭제</AlertDialogTitle>
+              <AlertDialogTitle>학생 삭제</AlertDialogTitle>
               <AlertDialogDescription>
-                <span className="font-semibold">{deleteItem.title}</span> 모듈을
+                <span className="font-semibold">{deleteItem.title}</span> 학생을
                 정말 삭제하시겠습니까?
               </AlertDialogDescription>
             </AlertDialogHeader>

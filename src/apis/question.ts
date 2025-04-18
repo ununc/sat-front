@@ -56,8 +56,9 @@ question.interceptors.request.use(
 export const requestCreateQuestion = async (
   payload: CreateQuestionDto
 ): Promise<Question> => {
-  delete payload.includeChoices;
-  const { data } = await question.post("", payload);
+  const newPayload = { ...payload };
+  delete newPayload.includeChoices;
+  const { data } = await question.post("", newPayload);
   return data;
 };
 
@@ -82,10 +83,14 @@ export const requestGetQuestions = async (
 };
 
 export const requestUpdateQuestion = async (
-  uid: string,
   payload: CreateQuestionDto
 ): Promise<Question> => {
-  const { data } = await question.put(`/${uid}`, payload);
+  const newPayload = { ...payload };
+  delete newPayload.includeChoices;
+  const { data } = await question.put(
+    `/${(payload as Question).uid}`,
+    newPayload
+  );
   return data;
 };
 

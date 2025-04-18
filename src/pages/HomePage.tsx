@@ -69,7 +69,7 @@ export default function HomePage() {
             <CardFooter className="border-t border-border bg-muted/30 flex justify-end">
               <Button
                 className="w-full"
-                onClick={() => navigate("/manage-exam/question")}
+                onClick={() => navigate("/manage/question")}
               >
                 문제 관리 바로가기
               </Button>
@@ -94,7 +94,7 @@ export default function HomePage() {
             <CardFooter className="border-t border-border bg-muted/30 flex justify-end">
               <Button
                 className="w-full"
-                onClick={() => navigate("/manage-exam/module")}
+                onClick={() => navigate("/manage/module")}
               >
                 모듈 관리 바로가기
               </Button>
@@ -119,7 +119,7 @@ export default function HomePage() {
             <CardFooter className="border-t border-border bg-muted/30 flex justify-end">
               <Button
                 className="w-full"
-                onClick={() => navigate("/manage-exam/test")}
+                onClick={() => navigate("/manage/test")}
               >
                 시험 관리 바로가기
               </Button>
@@ -166,7 +166,10 @@ export default function HomePage() {
               </p>
             </CardContent>
             <CardFooter className="border-t border-border bg-muted/30 flex justify-end">
-              <Button className="w-full" onClick={() => navigate("/")}>
+              <Button
+                className="w-full"
+                onClick={() => navigate("/manage/student")}
+              >
                 학생 관리 바로가기
               </Button>
             </CardFooter>

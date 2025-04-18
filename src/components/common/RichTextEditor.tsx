@@ -20,24 +20,6 @@ interface RichTextEditorProps {
   placeholder?: string;
 }
 
-const placeholderStyles = `
-  .content-editable-div:empty:before {
-    content: attr(data-placeholder);
-    color: #9ca3af;
-    pointer-events: none;
-  }
-  .latex-formula {
-    display: inline-block;
-    cursor: pointer;
-    padding: 2px;
-    border: 1px dashed transparent;
-  }
-  .latex-formula:hover {
-    border-color: #ddd;
-    background-color: rgba(0, 0, 0, 0.05);
-  }
-`;
-
 export const RichTextEditor = ({
   value,
   onChange,
@@ -97,24 +79,41 @@ export const RichTextEditor = ({
   const setupLatexEditListeners = () => {
     if (!editorRef.current) return;
 
-    const latexElements = editorRef.current.querySelectorAll(".latex-formula");
+    // 텍스트에서 $...$ 패턴 찾기
+    const paragraphs = editorRef.current.querySelectorAll("p");
 
-    latexElements.forEach((element) => {
-      element.addEventListener("click", (e) => {
-        // 에디터 내용 편집 중에는 이벤트 발생 방지
-        if (document.activeElement === editorRef.current) return;
+    paragraphs.forEach((p) => {
+      const text = p.textContent || "";
+      // $ 기호로 둘러싸인 텍스트가 있는지 확인
+      if (text.startsWith("$") && text.endsWith("$") && text.length > 2) {
+        // 이미 리스너가 설정되어 있는지 확인
+        if (!p.getAttribute("data-has-listener")) {
+          p.addEventListener("click", (e) => {
+            // 편집 중일 때는 클릭 이벤트 무시
+            if (document.activeElement === editorRef.current) return;
 
-        const formula = element.getAttribute("data-formula");
-        const id = element.getAttribute("id");
-        if (formula && id) {
-          e.preventDefault();
-          e.stopPropagation();
-          setLatexFormula(formula);
-          setEditingLatexId(id);
-          renderLatexPreview(formula);
-          setShowLatexDialog(true);
+            // $ 기호 제거하고 실제 수식만 추출
+            const formula = text.substring(1, text.length - 1);
+            // 고유 ID 생성 (없으면)
+            const id = p.id || `latex-${Date.now()}`;
+            p.id = id; // ID 설정 (편집을 위해 필요)
+
+            e.preventDefault();
+            e.stopPropagation();
+            setLatexFormula(formula);
+            setEditingLatexId(id);
+            renderLatexPreview(formula);
+            setShowLatexDialog(true);
+          });
+
+          // DOM에 표시되지 않는 속성으로 리스너 설정 표시
+          p.setAttribute("data-has-listener", "true");
+
+          // 스타일 속성은 CSS 파일에서 설정하도록 함
+          // 여기서는 클래스만 추가
+          p.classList.add("latex-formula-text");
         }
-      });
+      }
     });
   };
 
@@ -203,64 +202,74 @@ export const RichTextEditor = ({
   const insertLatex = () => {
     if (!editorRef.current || !latexFormula) return;
 
-    // 수식 ID 생성 또는 사용
-    const formulaId = editingLatexId || `latex-${Date.now()}`;
-
-    // 새 LaTeX 요소 생성
-    const latexSpan = document.createElement("span");
-    latexSpan.className = "latex-formula";
-    latexSpan.setAttribute("data-formula", latexFormula);
-    latexSpan.setAttribute("contenteditable", "false");
-    latexSpan.setAttribute("id", formulaId);
-
-    // KaTeX로 렌더링
-    try {
-      katex.render(latexFormula, latexSpan, {
-        throwOnError: false,
-        displayMode: latexFormula.includes("\\displaystyle"),
-      });
-    } catch (error) {
-      console.error("LaTeX 렌더링 에러:", error);
-      latexSpan.innerHTML = `<span style="color:red">오류: ${latexFormula}</span>`;
-    }
+    // 새 수식 텍스트 만들기 ($ 기호로 둘러싸기)
+    const formulaText = `$${latexFormula}$`;
 
     if (editingLatexId) {
       // 기존 수식 업데이트
-      const existingFormula = editorRef.current.querySelector(
+      const existingElement = editorRef.current.querySelector(
         `#${editingLatexId}`
       );
-      if (existingFormula) {
-        existingFormula.replaceWith(latexSpan);
+      if (existingElement) {
+        // 기존 요소의 텍스트만 업데이트
+        existingElement.textContent = formulaText;
+        // ID는 유지하고 다른 속성들은 제거
+        existingElement.removeAttribute("data-has-listener");
+        existingElement.removeAttribute("style");
       }
       setEditingLatexId(null);
     } else {
-      // 새 수식 삽입
       // 에디터 포커스
       editorRef.current.focus();
 
       // 현재 선택 영역 가져오기
       const selection = window.getSelection();
+      const p = document.createElement("p");
+      p.textContent = formulaText;
 
       if (selection && selection.rangeCount > 0) {
         const range = selection.getRangeAt(0);
 
         // 선택 영역이 에디터 내부인지 확인
         if (editorRef.current.contains(range.commonAncestorContainer)) {
-          // 현재 위치에 삽입
-          range.insertNode(latexSpan);
+          // 현재 커서 위치가 빈 단락 내부인지 확인
+          const parentElement = range.startContainer.parentNode as Element;
+
+          if (
+            parentElement &&
+            parentElement.nodeName === "P" &&
+            parentElement.textContent &&
+            parentElement.textContent.trim() === "" &&
+            parentElement.parentNode === editorRef.current
+          ) {
+            // 빈 단락을 새 단락으로 교체 (HTMLElement에는 replaceWith가 있음)
+            if (parentElement instanceof HTMLElement) {
+              parentElement.replaceWith(p);
+            } else {
+              // 대체 방법: 부모 노드에서 교체
+              if (parentElement.parentNode) {
+                parentElement.parentNode.replaceChild(p, parentElement);
+              } else {
+                range.insertNode(p);
+              }
+            }
+          } else {
+            // 새 단락 삽입
+            range.insertNode(p);
+          }
 
           // 커서를 수식 뒤로 이동
-          range.setStartAfter(latexSpan);
-          range.setEndAfter(latexSpan);
+          range.setStartAfter(p);
+          range.setEndAfter(p);
           selection.removeAllRanges();
           selection.addRange(range);
         } else {
           // 에디터 끝에 추가
-          editorRef.current.appendChild(latexSpan);
+          editorRef.current.appendChild(p);
         }
       } else {
         // 에디터 끝에 추가
-        editorRef.current.appendChild(latexSpan);
+        editorRef.current.appendChild(p);
       }
     }
 
@@ -270,7 +279,6 @@ export const RichTextEditor = ({
     setLatexFormula("");
     setLatexPreview("");
   };
-
   // Insert table at cursor position
   const insertTable = () => {
     if (!editorRef.current) return;
@@ -362,7 +370,6 @@ export const RichTextEditor = ({
 
   return (
     <div className="rich-text-editor border rounded-md flex-1">
-      <style>{placeholderStyles}</style>
       {/* Editor toolbar */}
       <div className="flex items-center p-2 border-b bg-muted/30">
         <Button
