@@ -8,6 +8,8 @@ import { TestPage } from "@/pages/mange-exam/TestPage";
 import { StudentPage } from "@/pages/StudentPage";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { ProtectAdminRoute } from "./ProtectAdminRoute";
+import { ExamPage } from "@/pages/for-student/ExamPage";
+import { ResultPage } from "@/pages/for-student/ResultPage";
 
 export const router = createBrowserRouter([
   {
@@ -44,6 +46,14 @@ export const router = createBrowserRouter([
             element: <StudentPage />,
           },
         ],
+      },
+      {
+        path: "exam",
+        element: <ExamPage />,
+      },
+      {
+        path: "result/:resultId", // 여기에 동적 매개변수 추가
+        element: <ResultPage />,
       },
     ],
   },

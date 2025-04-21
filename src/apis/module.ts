@@ -77,3 +77,8 @@ export const requestDeleteModule = async (uid: string): Promise<Question> => {
   const { data } = await module.delete(`/${uid}`);
   return data;
 };
+
+export const requestExamModule = async (moduleUID: string): Promise<Module> => {
+  const { data } = await module.get(`/${moduleUID}`);
+  return data;
+};

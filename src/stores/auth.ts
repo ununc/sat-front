@@ -10,10 +10,15 @@ interface CounterState {
 const initialAuth: Auth = {
   accessToken: "",
   userInfo: {
+    uid: "",
+    id: "",
     name: "",
     role: "user",
     startTime: "",
     endTime: "",
+    exams: [],
+    createdAt: "",
+    updatedAt: "",
   },
 };
 

@@ -1,4 +1,5 @@
 import axios from "axios";
+import { Order } from "./test";
 
 export interface LoginDto {
   id: string;
@@ -38,8 +39,22 @@ export interface Auth {
 type Role = "admin" | "teacher" | "student" | "user";
 
 interface UserInfo {
+  uid: string;
+  id: string;
   name: string;
-  role: Role;
   startTime: string;
   endTime: string;
+  role: Role;
+  exams: Examss[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Examss {
+  testId: string;
+  count: number;
+  title: string;
+  description: string;
+  level: number;
+  order: Order[];
 }

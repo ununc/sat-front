@@ -1,9 +1,14 @@
 import { useAuthStore } from "@/stores/auth";
 import axios from "axios";
+import { Order } from "../test";
 
 export interface Exams {
   testId: string;
   count: number;
+  title?: string;
+  description?: string;
+  level?: number;
+  order?: Order[];
 }
 
 export interface Student {
@@ -95,4 +100,12 @@ export const requestResetPasswordStudent = async (
 export const requestDeleteStudent = async (uid: string): Promise<Student> => {
   const { data } = await student.delete(`/${uid}`);
   return data;
+};
+
+export const requestDecrementExamCount = async (
+  userId: string,
+  testId: string
+): Promise<Student> => {
+  const { data } = await student.put(`/${userId}/exams/${testId}/decrement`);
+  return data.user;
 };

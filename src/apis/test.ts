@@ -59,6 +59,13 @@ export const requestGetTests = async (filter?: TestFilter): Promise<Test[]> => {
   return data;
 };
 
+export const requestArrayTests = async (payload: string[]): Promise<Test[]> => {
+  const { data } = await test.post("multiple", {
+    uids: payload,
+  });
+  return data;
+};
+
 export const requestCreateTest = async (
   payload: CreateTestDto
 ): Promise<Test> => {

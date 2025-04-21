@@ -17,19 +17,13 @@ import {
   UserCheck,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { MainPage } from "./for-student/MainPage";
 
 export default function HomePage() {
   const { auth } = useAuthStore();
   const navigate = useNavigate();
   if (auth.userInfo.role === "student") {
-    return (
-      <div className="flex flex-col items-center">
-        <h1 className="text-3xl font-bold mb-4">메인 페이지</h1>
-        <p className="mb-4">{auth.userInfo.name} 님 안녕하세요!</p>
-        <p className="mb-4">역학: {auth.userInfo.role}</p>
-        <Button>시작하기</Button>
-      </div>
-    );
+    return <MainPage />;
   }
 
   if (auth.userInfo.role === "admin") {
