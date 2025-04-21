@@ -105,6 +105,21 @@ export const ExamPage = () => {
     callModuleQuestions(data);
   };
 
+  const removeIsMarkedField = (testPaper: TestResult): TestResult => {
+    const updatedTestPaper: TestResult = JSON.parse(JSON.stringify(testPaper));
+    updatedTestPaper.moduleResults.forEach((module) => {
+      if (module.moduleId) {
+        module.answers.forEach((answer) => {
+          if ("isMarked" in answer) {
+            delete answer.isMarked;
+          }
+        });
+      }
+    });
+
+    return updatedTestPaper;
+  };
+
   const saveAndGetNextModule = async () => {
     if (!testPaper) return;
 
@@ -113,7 +128,10 @@ export const ExamPage = () => {
     if (testPaper.moduleResults.length <= nextIndex) {
       const timestamp = new Date().getTime();
       testPaper.endAt = new Date(timestamp);
-      await requestUpdateTestResult(testPaper.uid, testPaper);
+      await requestUpdateTestResult(
+        testPaper.uid,
+        removeIsMarkedField(testPaper)
+      );
       navigate("/");
       return;
     }
@@ -121,7 +139,7 @@ export const ExamPage = () => {
 
     const newTestPaper = await requestUpdateTestResult(
       testPaper.uid,
-      testPaper
+      removeIsMarkedField(testPaper)
     );
     setCurrentQuestion(0);
     callModuleQuestions(newTestPaper);

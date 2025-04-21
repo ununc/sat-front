@@ -213,7 +213,7 @@ export const ResultPage = () => {
               </div>
 
               <div className="p-4 space-y-3 bg-card/50">
-                {module.answers.slice(0, 4).map((answer, answerIndex) => {
+                {module.answers.map((answer, answerIndex) => {
                   const isCorrect =
                     answer.studentAnswer === answer.questionAnswer;
 

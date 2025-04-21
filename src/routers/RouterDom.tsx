@@ -6,19 +6,19 @@ import { QuestionPage } from "@/pages/mange-exam/QuestionPage";
 import { ModulePage } from "@/pages/mange-exam/ModulePage";
 import { TestPage } from "@/pages/mange-exam/TestPage";
 import { StudentPage } from "@/pages/StudentPage";
-import { ProtectedRoute } from "./ProtectedRoute";
 import { ProtectAdminRoute } from "./ProtectAdminRoute";
 import { ExamPage } from "@/pages/for-student/ExamPage";
 import { ResultPage } from "@/pages/for-student/ResultPage";
+import { ProTEctAccess } from "@/routers/ProtectAccess";
 
-export const router = createBrowserRouter([
+export const RouterDom = createBrowserRouter([
   {
     path: "/login",
     element: <LoginPage />,
   },
   {
     path: "/",
-    element: <ProtectedRoute />,
+    element: <ProTEctAccess />,
     errorElement: <ErrorPage />,
     children: [
       {
