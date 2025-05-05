@@ -1,54 +1,64 @@
-# React + TypeScript + Vite
+# 📊 1인 개발자 기준 수학문제은행/시험시스템 예상 견적 & 기간
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+---
 
-Currently, two official plugins are available:
+## 🛠️ 요구 기능 요약
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **학생·관리자 로그인/계정 관리**
+- 로그인 이력 및 시간 관리
+- 수학/국어 **문제 생성, 관리, 모듈화**
+- 기출문제/모듈 단위 **시험 생성 및 관리**
+- 시험 **학생 할당/응시/자동채점**
+- **시험 결과 통계** 및 문제별 풀이시간, 성적표 제공
+- 시험·문제·결과의 **PDF 저장/인쇄**
+- **수식 그래프 계산기**
+- **Latex** 지원 Rich Text 에디터
+- **백엔드/프론트/DB/인프라**/권한/보안 일체 개발
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🗓️ 개발 소요기간 & 예상 금액
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+| 구분         | 권장 범위                  |
+| ------------ | -------------------------- |
+| **예상기간** | 2~3개월(60~90일)           |
+| **예상금액** | 2,500~3,000만원(세금 별도) |
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 📌 상세 산정 기준
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+- 요구사항 명확화(필수/부가기능 범위 정리)
+- PDF 변환, latex 에디터, 수식 그래프 등 난이도 높은 기능 포함
+- 디자인 커스텀 여부, 유지보수/운영 및 배포(서버 등)는 별도
+- 추가요구/옵션사항은 추후 협의 및 별도 청구
+- 참고 시세: 외주 플랫폼 표준 가격 및 유사프로젝트 사례
+
+---
+
+## 💵 참조 견적표
+
+| 유형                    | 최소비(만원) | 권장비(만원) | 기간(영업일) |
+| ----------------------- | ------------ | ------------ | ------------ |
+| DB+API+프론트(기본)     | 1,800        | 2,500        | 40~60        |
+| PDF/그래프/에디터(부가) | 300~500      | 600~800      | 10~20        |
+| **합계(기본+부가)**     | **2,100**    | **3,000**    | **60~90**    |
+
+---
+
+## ✅ 견적 제안 예시 문구
+
+> 전체 개발 기간 약 2.5~3개월(60~90일) 소요 예상  
+> 총 개발비 2,700~3,000만원으로 제안  
+> (상세 요구 및 옵션 사항에 따라 변동, 유지보수·디자인 등 별도 협의)
+
+---
+
+## 🔖 추가 유의사항
+
+- 풀스택 1인 개발 기준의 실제 시장 평균 견적
+- "난이도 높은 기능 다수"인 점 감안, 저가 경쟁 자제 필요
+- 요구 명세 상세화, 유지보수/디자인/운영 별도 안내 필수
+- 배포(클라우드/VPS), 3rd파티 라이브러리 요금 등 실비항목도 고려
+
+---

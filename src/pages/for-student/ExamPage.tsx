@@ -5,9 +5,17 @@ import {
   requestUpdateTestResult,
   TestResult,
 } from "@/apis/testResult";
+import { DesmosCalculator } from "@/components/common/DesmosCalculator";
+import { MathRef } from "@/components/common/MathRef";
 import { RichTextViewer } from "@/components/common/RichTextViewer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import {
   Popover,
@@ -17,7 +25,13 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { useAuthStore } from "@/stores/auth";
 import { useExamFlowStore } from "@/stores/exam";
-import { ChevronRight, Bookmark, Menu, MapPin, Timer } from "lucide-react";
+import {
+  ChevronRight,
+  Bookmark,
+  MapPin,
+  Timer,
+  EllipsisVertical,
+} from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -31,6 +45,9 @@ export const ExamPage = () => {
   const [currentQuestion, setCurrentQuestion] = useState<number>(0);
   const [showTimer, setShowTimer] = useState(true);
   const [isBreakTime, setIsBreakTime] = useState(false);
+
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+
   const navigate = useNavigate();
   const maxQuestionIndex = useMemo(() => {
     return currentModule?.questions?.length || 0;
@@ -165,12 +182,35 @@ export const ExamPage = () => {
     return `${formattedMinutes}:${formattedSeconds}`;
   };
 
+  const handleSaveAndExit = async () => {
+    if (!testPaper) return;
+    await requestUpdateTestResult(
+      testPaper.uid,
+      removeIsMarkedField(testPaper)
+    );
+    navigate("/");
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       await checkExist();
     };
     fetchData();
   }, []);
+
+  useEffect(() => {
+    const handleBeforeUnload = (event: Event) => {
+      if (!testPaper) return;
+      requestUpdateTestResult(testPaper.uid, removeIsMarkedField(testPaper));
+      console.log("hi", testPaper);
+      event.preventDefault();
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [testPaper]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -307,15 +347,22 @@ export const ExamPage = () => {
             {showTimer ? "Hide" : "Show"}
           </Button>
         </div>
-        <div className="flex w-1/3 justify-end items-center gap-4">
-          {/* <div className="flex items-center gap-2">
-            <Edit size={18} />
-            <span className="text-sm text-muted-foreground">Annotate</span>
-          </div> */}
-
-          <Button variant="ghost" size="icon" className="text-muted-foreground">
-            <Menu size={24} />
-          </Button>
+        <div className="flex w-1/3 justify-end items-start gap-4">
+          <DesmosCalculator isOpen={isOpen} setIsOpen={setIsOpen} />
+          <MathRef isDesmosOpen={isOpen} />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="cursor-pointer p-2 flex flex-col items-center justify-center">
+                <EllipsisVertical size={24} />
+                <div className="mt-1 text-sm">More</div>
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => handleSaveAndExit()}>
+                Save & Exit
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 

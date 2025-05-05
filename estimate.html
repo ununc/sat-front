@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SAT 등 문제 은행·시험 진행 및 원생 관리 시스템</title>
+    <style>
+      :root {
+        --primary: #7943d5;
+        --primary-light: #eae4f9;
+        --primary-dark: #54309c;
+        --secondary: #f9fafc;
+        --danger: #fde1e8;
+      }
+      body {
+        font-family: "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
+        background: var(--secondary);
+        margin: 0;
+        color: #262143;
+      }
+      .wrapper {
+        max-width: 950px;
+        margin: 46px auto 36px;
+        background: #fff;
+        border-radius: 18px;
+        box-shadow: 0 0 28px 0 rgba(63, 20, 100, 0.14);
+        padding: 38px 36px 44px 36px;
+        position: relative;
+      }
+      .top-bar {
+        display: flex;
+        align-items: center;
+        gap: 19px;
+        margin-bottom: 32px;
+      }
+      .logo-circle {
+        width: 76px;
+        height: 76px;
+        border-radius: 50%;
+        background: linear-gradient(
+          135deg,
+          var(--primary),
+          var(--primary-dark) 90%
+        );
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 3px 18px 0 rgba(121, 67, 213, 0.09);
+      }
+      .logo {
+        color: #fff;
+        letter-spacing: -2px;
+        font-weight: 800;
+        font-size: 2.3em;
+        padding-top: 5px;
+        padding-right: 2px;
+      }
+      .contract-title-block {
+        flex: 1;
+      }
+      .contract-title {
+        font-size: 2.05em;
+        font-weight: 700;
+        color: var(--primary-dark);
+        letter-spacing: 1.2px;
+        margin-bottom: 5px;
+      }
+      .contract-sub {
+        color: #9a8bc2;
+        font-size: 1.06em;
+        font-weight: 400;
+        margin-bottom: 2px;
+        letter-spacing: 0.2px;
+      }
+      .summary-section {
+        display: flex;
+        flex-wrap: wrap;
+        border: 2.5px solid var(--primary-light);
+        background: #faf6ff;
+        border-radius: 11px;
+        margin-bottom: 24px;
+        padding: 19px 28px 16px 28px;
+        gap: 22px;
+      }
+      .summary-row {
+        width: 100%;
+      }
+      .summary-col {
+        flex: 1 1 260px;
+        min-width: 230px;
+        margin-bottom: 10px;
+      }
+      .summary-label {
+        color: var(--primary-dark);
+        font-weight: 600;
+        font-size: 1.08em;
+        margin-bottom: 5px;
+        line-height: 1.2;
+      }
+      .summary-value {
+        margin-top: 4px;
+        font-size: 1.12em;
+        font-weight: bold;
+        color: #1a0e44;
+        letter-spacing: 0.8px;
+      }
+      .price-big {
+        color: var(--primary);
+        font-size: 1.24em !important;
+        font-weight: 800;
+        letter-spacing: 1.2px;
+      }
+      .divider {
+        height: 3px;
+        background: linear-gradient(
+          90deg,
+          #ebe6f7 60%,
+          var(--primary) 90%,
+          #fff 100%
+        );
+        border: none;
+        margin: 28px 0 28px 0;
+        border-radius: 1.5px;
+      }
+      .section-title {
+        color: var(--primary-dark);
+        font-size: 1.1em;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        border-left: 7px solid var(--primary);
+        padding-left: 13px;
+        margin-bottom: 10px;
+        margin-top: 37px;
+      }
+      .spec-list,
+      .exclude-list {
+        margin-left: 16px;
+        padding-left: 0;
+      }
+      .spec-list li,
+      .exclude-list li {
+        color: #362c59;
+        font-size: 15.3px;
+        line-height: 1.85;
+        margin-bottom: 3px;
+        letter-spacing: 0.2px;
+      }
+      .exclude-list {
+        color: #b46464;
+        font-weight: 500;
+      }
+      .cost-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin-top: 18px;
+        background: #f4f0fa;
+        border-radius: 11px;
+        overflow: hidden;
+      }
+      .cost-table th,
+      .cost-table td {
+        padding: 13px 9px;
+        font-size: 15.2px;
+        text-align: left;
+      }
+      .cost-table th {
+        background: var(--primary-light);
+        color: var(--primary-dark);
+        font-weight: 700;
+        border-bottom: 2.3px solid #c8b5f3;
+        letter-spacing: 0.03em;
+      }
+      .cost-table td {
+        border-bottom: 1px solid #e0d8f8;
+      }
+      .cost-table tr:not(:last-child):hover td {
+        background: #fff;
+        transition: 0.2s;
+      }
+      .sum-row td {
+        font-size: 1.15em;
+        font-weight: bold;
+        background: var(--primary);
+        color: #fff !important;
+        border-bottom: none;
+        letter-spacing: 0.1em;
+      }
+      .note {
+        margin: 16px 0 0 0;
+        padding: 16px 18px 13px 18px;
+        background: #e8eaf7;
+        border-left: 4px solid var(--primary);
+        color: #3c2e6c;
+        font-size: 15.3px;
+        border-radius: 3px;
+      }
+      .process-section {
+        margin-top: 50px;
+        margin-bottom: 16px;
+      }
+      .timeline {
+        display: flex;
+        align-items: flex-start;
+        gap: 30px;
+        overflow-x: auto;
+        padding-bottom: 10px;
+        padding-left: 2px;
+      }
+      .timeline-step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        flex: 1 1 150px;
+        min-width: 150px;
+        margin-bottom: 10px;
+      }
+      .timeline-circle {
+        width: 33px;
+        height: 33px;
+        background: var(--primary);
+        color: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 1.17em;
+        border: 3.5px solid #eae4f9;
+        margin-bottom: 7px;
+        box-shadow: 0 1px 5px 0 rgba(121, 67, 213, 0.06);
+      }
+      .timeline-label {
+        color: var(--primary-dark);
+        font-weight: 700;
+        margin-bottom: 2px;
+        font-size: 1.06em;
+      }
+      .timeline-desc {
+        font-size: 14px;
+        color: #5e527a;
+        text-align: center;
+        padding: 0 4px;
+        margin-bottom: 0;
+        margin-top: 3px;
+      }
+      .signature-section {
+        border-top: 2px solid #ecdeff;
+        padding-top: 32px;
+      }
+      .footer {
+        margin-top: 20px;
+        color: #bdb7d3;
+        text-align: center;
+        font-size: 13px;
+      }
+      @media (max-width: 680px) {
+        .wrapper {
+          padding: 11px 1vw 30px 1vw;
+        }
+        .top-bar {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .summary-section {
+          flex-direction: column;
+        }
+        .timeline {
+          flex-direction: column;
+          gap: 14px;
+        }
+        .timeline-step {
+          flex-direction: row;
+          align-items: flex-start;
+          min-width: 0;
+        }
+        .timeline-circle {
+          margin-right: 9px;
+        }
+        .signature-section {
+          flex-direction: column;
+          gap: 18px;
+          align-items: flex-start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <!-- 상단: 로고/타이틀 -->
+      <div class="top-bar">
+        <div class="logo-circle">
+          <div class="logo">柳</div>
+        </div>
+        <div class="contract-title-block">
+          <div class="contract-title">
+            SAT 등 문제 은행·시험 진행 및 원생 관리 시스템<br />개발 외주 제안서
+          </div>
+          <div class="contract-sub">엔터프라이즈용 표준 계약 문서</div>
+        </div>
+      </div>
+      <!-- 요약정보 -->
+      <div class="summary-section">
+        <div class="summary-row">
+          <div class="summary-label">프로젝트명</div>
+          <div class="summary-value">
+            SAT 등 문제 은행·시험 진행 및 원생 관리 시스템
+          </div>
+        </div>
+        <div class="summary-col">
+          <div class="summary-label">총 계약금액</div>
+          <div class="summary-value price-big">18,000,000원</div>
+        </div>
+        <div class="summary-col">
+          <div class="summary-label">결제 조건</div>
+          <div class="summary-value">
+            3년 분납 (매월 500,000원 × 36회)<br />
+            <span style="color: #a49ad9; font-size: 0.97em"
+              >*납부기간 전체 무상 유지보수 포함</span
+            >
+          </div>
+        </div>
+      </div>
+
+      <div class="note">
+        ⦁ 본 견적서는 3년 분납(납부기간 중 무상유지보수) 조건으로
+        설계되었습니다.<br />
+        ⦁ 서버·인프라, 유료 라이선스,
+        <b>아키텍처 리팩토링이나 대규모 신규 기능 등 추가적 개발</b>은 별도
+        협의·과금 대상입니다.<br />
+        ⦁ 프로젝트 요청/사양 변경, 규모 확장 등은 상호 합의·재계약의 근거가
+        됩니다.<br />
+        ⦁ 개인정보 및 DB, 소스의 주요 권한은 주계약자에 귀속되며 프로젝트 완료
+        즉시 전체 산출물/소스 납품이 이뤄집니다.
+      </div>
+      <hr class="divider" />
+
+      <!-- 기능 스펙 -->
+      <div class="section-title">주요 기능 및 제공 범위</div>
+      <ul class="spec-list">
+        <li>
+          <b>학생/관리자 인증·계정관리</b>: 회원가입, 권한별 로그인, 로그인 가능
+          시간 관리
+        </li>
+        <li>
+          <b>시험·문제은행 생성/관리</b>: 문항 관리, 모듈 관리, 시험 출제·응시,
+          자동 채점, 통계 리포트
+        </li>
+        <li><b>LaTeX 수식/그래프 에디터</b>, <b>PDF 및 엑셀 내보내기</b>.</li>
+        <li>
+          <b>대시보드·시각화</b>: 성적/접속분석 및 오답/시간 통계, 관리자 리포트
+        </li>
+        <li><b>반응형 웹UI</b>: PC/Tablet 호환, 최신 UI/UX 설계</li>
+        <li><b>관리자 매뉴얼/운영 가이드, 소스 전체 납품</b></li>
+      </ul>
+      <!-- 세부 견적 테이블 -->
+      <div class="section-title">세부 견적</div>
+      <table class="cost-table">
+        <thead>
+          <tr>
+            <th style="width: 55px">No</th>
+            <th style="width: 180px">모듈 구분</th>
+            <th>업무 및 주요 기능</th>
+            <th style="width: 100px">금액 (원)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>요구분석/설계</td>
+            <td>상세 요구명세, 전체 화면/DB설계, 프로젝트 기획</td>
+            <td>2,800,000</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>프론트엔드 개발</td>
+            <td>SPA UI, 시험응시/관리, 반응형(PC/Tablet) 설계</td>
+            <td>4,200,000</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>백엔드/API</td>
+            <td>인증/권한관리, 문제/시험, RESTful API, DB설계</td>
+            <td>4,500,000</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>특화기능/엑셀·PDF</td>
+            <td>Latex 수식·PDF 내보내기, 엑셀 업/다운, 그래프 에디터</td>
+            <td>3,000,000</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>관리자 대시보드</td>
+            <td>통계 및 성적분석, 데이터 시각화(차트/리포트), 접속·오답관리</td>
+            <td>1,800,000</td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td>테스트/배포</td>
+            <td>
+              통합/QA 테스트, 버전관리, 사용자·운영자 가이드, 서버 구축지원
+            </td>
+            <td>1,700,000</td>
+          </tr>
+          <tr class="sum-row">
+            <td colspan="3" style="text-align: right">총 합계</td>
+            <td>18,000,000</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- 타임라인 프로세스 -->
+      <div class="section-title">업무 프로세스</div>
+      <div class="process-section">
+        <div class="timeline">
+          <div class="timeline-step">
+            <div class="timeline-circle">1</div>
+            <div class="timeline-label">분석/설계</div>
+            <div class="timeline-desc">상세 요구 파악 및 설계, 일정 산정</div>
+          </div>
+          <div class="timeline-step">
+            <div class="timeline-circle">2</div>
+            <div class="timeline-label">개발</div>
+            <div class="timeline-desc">
+              프론트엔드·백엔드, 기능 구현, 고급 UI/특화 기능
+            </div>
+          </div>
+          <div class="timeline-step">
+            <div class="timeline-circle">3</div>
+            <div class="timeline-label">통합테스트/검증</div>
+            <div class="timeline-desc">QA/버그수정, 성능검증, 매뉴얼 작성</div>
+          </div>
+          <div class="timeline-step">
+            <div class="timeline-circle">4</div>
+            <div class="timeline-label">배포·인수인계</div>
+            <div class="timeline-desc">
+              운영 환경 구축, 소스·산출물 일괄 전달
+            </div>
+          </div>
+          <div class="timeline-step">
+            <div class="timeline-circle">5</div>
+            <div class="timeline-label">유지보수(3년)</div>
+            <div class="timeline-desc">
+              납부 기간 내 전액 무상, 버그·경미 개선
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- 서명란 -->
+      <div class="signature-section"></div>
+      <!-- footer -->
+      <div class="footer">
+        본 계약서는 양사 상호 신뢰를 기반으로 약정된 외주 개발 표준서입니다.<br />
+        문의: contact@aasoft.co.kr &copy; 2024 AAsoft
+      </div>
+    </div>
+  </body>
+</html>
