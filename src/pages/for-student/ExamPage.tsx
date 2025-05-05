@@ -158,8 +158,9 @@ export const ExamPage = () => {
       testPaper.uid,
       removeIsMarkedField(testPaper)
     );
-    setCurrentQuestion(0);
+    setTestPaper(newTestPaper);
     callModuleQuestions(newTestPaper);
+    setCurrentQuestion(0);
   };
 
   const handleClickNext = () => {
@@ -224,16 +225,28 @@ export const ExamPage = () => {
         moduleResult.remainTime -= 1;
       }
 
-      const answerToUpdate = moduleResult.answers[currentQuestion];
-      if (answerToUpdate) {
-        answerToUpdate.spendTime = (answerToUpdate.spendTime || 0) + 1;
-      }
-
       setTestPaper(updatedTestPaper);
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [testPaper, currentQuestion, currentModule]);
+  }, [testPaper?.currentIndex, currentModule]);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (!testPaper) return;
+
+      const updatedTestPaper = { ...testPaper };
+      const moduleResult =
+        updatedTestPaper.moduleResults[updatedTestPaper.currentIndex];
+      const answerToUpdate = moduleResult.answers[currentQuestion];
+      if (answerToUpdate) {
+        answerToUpdate.spendTime = (answerToUpdate.spendTime || 0) + 1;
+      }
+      setTestPaper(updatedTestPaper);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [testPaper?.currentIndex, currentQuestion]);
 
   if (isBreakTime) {
     return (
@@ -409,7 +422,7 @@ export const ExamPage = () => {
                           {index + 1}
                         </Button>
                         {testPaper?.moduleResults[testPaper.currentIndex]
-                          .answers[index].isMarked && (
+                          .answers[index]?.isMarked && (
                           <Bookmark
                             size={20}
                             className="fill-red-400 text-red-400 absolute -top-1 -right-1"
@@ -555,7 +568,7 @@ export const ExamPage = () => {
                         )}
 
                         {testPaper?.moduleResults[testPaper.currentIndex]
-                          .answers[index].isMarked && (
+                          .answers[index]?.isMarked && (
                           <Bookmark
                             size={14}
                             className="fill-red-400 text-red-400 absolute -top-1 -right-1"

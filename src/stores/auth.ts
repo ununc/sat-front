@@ -1,9 +1,10 @@
-import type { Auth } from "@/apis/login";
+import type { Auth, Examss } from "@/apis/login";
 import { create } from "zustand";
 
 interface CounterState {
   auth: Auth;
   setAuth: (auth: Auth) => void;
+  setNewExams: (exams: Examss[]) => void;
   clearAuth: () => void;
 }
 
@@ -25,5 +26,15 @@ const initialAuth: Auth = {
 export const useAuthStore = create<CounterState>((set) => ({
   auth: initialAuth,
   setAuth: (auth: Auth) => set({ auth }),
+  setNewExams: (exams: Examss[]) =>
+    set((state) => ({
+      auth: {
+        ...state.auth,
+        userInfo: {
+          ...state.auth.userInfo,
+          exams: exams,
+        },
+      },
+    })),
   clearAuth: () => set({ auth: initialAuth }),
 }));

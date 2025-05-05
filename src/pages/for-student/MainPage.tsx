@@ -1,4 +1,5 @@
 import { requestDecrementExamCount } from "@/apis/admin-menu/students";
+import { Examss } from "@/apis/login";
 import { Order } from "@/apis/test";
 import { CompleteResult, requestGetUserTestResults } from "@/apis/testResult";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -37,6 +38,7 @@ import { useNavigate } from "react-router-dom";
 export const MainPage = () => {
   const {
     auth: { userInfo },
+    setNewExams,
   } = useAuthStore();
 
   const [activeTab, setActiveTab] = useState("start");
@@ -78,12 +80,15 @@ export const MainPage = () => {
     };
   };
 
-  const startTest = async (test: string) => {
+  const startTest = async (test: Examss) => {
     setExamFlow({
-      test,
+      test: test.testId,
       isNew: true,
     });
-    await requestDecrementExamCount(userInfo.uid, test);
+    await requestDecrementExamCount(userInfo.uid, test.testId);
+    if (test.count === 1) {
+      setNewExams(userInfo.exams.filter((exam) => exam.testId !== test.testId));
+    }
     navigate("/exam");
   };
 
@@ -278,7 +283,7 @@ export const MainPage = () => {
                                   className="mr-2 w-full"
                                   variant="default"
                                   size="icon"
-                                  onClick={() => startTest(exam.testId)}
+                                  onClick={() => startTest(exam)}
                                 >
                                   시험 시작
                                 </Button>
