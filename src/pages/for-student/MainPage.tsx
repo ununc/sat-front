@@ -1,4 +1,15 @@
-import { requestDecrementExamCount } from "@/apis/admin-menu/students";
+import {
+  requestChangePasswordStudent,
+  requestDecrementExamCount,
+} from "@/apis/admin-menu/students";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Examss } from "@/apis/login";
 import { Order } from "@/apis/test";
 import { CompleteResult, requestGetUserTestResults } from "@/apis/testResult";
@@ -25,15 +36,26 @@ import { useAuthStore } from "@/stores/auth";
 import { useExamFlowStore } from "@/stores/exam";
 import { useResultStore } from "@/stores/result";
 import {
+  AlertCircle,
   Award,
   BookOpen,
   Calendar,
   CheckCircle,
   Clock,
+  LockKeyhole,
   UserCircle,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+
+interface AlertState {
+  show: boolean;
+  type?: "success" | "error";
+  title?: string;
+  description?: string;
+}
 
 export const MainPage = () => {
   const {
@@ -45,7 +67,54 @@ export const MainPage = () => {
   const [completeTests, setCompleteTests] = useState<CompleteResult[]>([]);
   const [onGoingTests, setonGoingTests] = useState<CompleteResult[]>([]);
   const { setExamFlow } = useExamFlowStore();
+  const [openPasswordDialog, setOpenPasswordDialog] = useState(false);
+  const [passwords, setPasswords] = useState({
+    oldPassword: "",
+    newPassword: "",
+  });
+
+  const [alert, setAlert] = useState<AlertState>({
+    show: false,
+  });
+
+  const closeChangePasswordModal = () => {
+    setOpenPasswordDialog(false);
+    setPasswords({
+      oldPassword: "",
+      newPassword: "",
+    });
+  };
+
+  const handlePasswordChange = async () => {
+    try {
+      await requestChangePasswordStudent({
+        oldPassword: passwords.oldPassword,
+        newPassword: passwords.newPassword,
+      });
+      setAlert({
+        show: true,
+        type: "success",
+        title: "비밀번호 변경 성공",
+        description: "비밀번호가 성공적으로 변경되었습니다.",
+      });
+      setOpenPasswordDialog(false);
+      setPasswords({ oldPassword: "", newPassword: "" });
+
+      setTimeout(() => {
+        setAlert({ show: false });
+      }, 2000);
+    } catch {
+      setAlert({
+        show: true,
+        type: "error",
+        title: "비밀번호 변경 실패",
+        description: "비밀번호 변경 중 오류가 발생했습니다. 다시 시도해주세요.",
+      });
+    }
+  };
+
   const { setResultInfo } = useResultStore();
+
   const navigate = useNavigate();
 
   const timeToSeconds = (timeStr: string) => {
@@ -161,6 +230,14 @@ export const MainPage = () => {
                 이용 가능 시간: {userInfo.startTime.slice(0, -3)} -{" "}
                 {userInfo.endTime.slice(0, -3)}
               </span>
+            </Badge>
+            <Badge
+              variant="outline"
+              className="flex items-center gap-1 py-1.5 px-3 cursor-pointer hover:bg-accent"
+              onClick={() => setOpenPasswordDialog(true)}
+            >
+              <LockKeyhole className="h-4 w-4" />
+              <span>비밀번호 변경</span>
             </Badge>
           </div>
         </div>
@@ -487,6 +564,67 @@ export const MainPage = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      <Dialog open={openPasswordDialog} onOpenChange={closeChangePasswordModal}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>비밀번호 변경</DialogTitle>
+          </DialogHeader>
+
+          {alert.show && (
+            <Alert
+              variant={alert.type === "error" ? "destructive" : "default"}
+              className="my-2"
+            >
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>{alert.title}</AlertTitle>
+              <AlertDescription>{alert.description}</AlertDescription>
+            </Alert>
+          )}
+
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="oldPassword" className="text-right">
+                현재 비밀번호
+              </Label>
+              <Input
+                id="oldPassword"
+                type="password"
+                className="col-span-3"
+                value={passwords.oldPassword}
+                onChange={(e) =>
+                  setPasswords({ ...passwords, oldPassword: e.target.value })
+                }
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="newPassword" className="text-right">
+                새 비밀번호
+              </Label>
+              <Input
+                id="newPassword"
+                type="password"
+                className="col-span-3"
+                value={passwords.newPassword}
+                onChange={(e) =>
+                  setPasswords({ ...passwords, newPassword: e.target.value })
+                }
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={closeChangePasswordModal}>
+              취소
+            </Button>
+            <Button
+              onClick={handlePasswordChange}
+              disabled={passwords.newPassword.length < 6}
+            >
+              변경
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
