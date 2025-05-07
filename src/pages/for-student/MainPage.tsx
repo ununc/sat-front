@@ -87,7 +87,7 @@ export const MainPage = () => {
 
   const handlePasswordChange = async () => {
     try {
-      await requestChangePasswordStudent({
+      await requestChangePasswordStudent(userInfo.uid, {
         oldPassword: passwords.oldPassword,
         newPassword: passwords.newPassword,
       });
@@ -530,7 +530,22 @@ export const MainPage = () => {
                                 ).toLocaleDateString()}
                               </TableCell>
 
-                              <TableCell>추후 개발 예정</TableCell>
+                              <TableCell>
+                                {test.scoreline?.filter((score) => score)
+                                  ?.length
+                                  ? test.scoreline.map((score) => {
+                                      if (!score.total) {
+                                        return null;
+                                      }
+                                      return (
+                                        <div>
+                                          <span>{score.correct}</span> /{" "}
+                                          <span>{score.total}</span>
+                                        </div>
+                                      );
+                                    })
+                                  : "결과 없음"}
+                              </TableCell>
                               <TableCell className="text-right">
                                 <Button
                                   className="mr-2 w-full"

@@ -384,7 +384,7 @@ export const ExamPage = () => {
 
       {/* Main content */}
       {maxQuestionIndex <= currentQuestion ? (
-        <div className="flex flex-col flex-1 justify-center items-center">
+        <div className="flex flex-col py-4 h-[calc(100vh-180px)] overflow-y-auto justify-center items-center">
           <h2 className="font-bold text-3xl mb-2">Check Your Work</h2>
           <div>
             On test day, you won't be able to move on to the next module until
@@ -437,10 +437,10 @@ export const ExamPage = () => {
           </Card>
         </div>
       ) : (
-        <div className="flex flex-1 justify-center">
+        <div className="flex h-[calc(100vh-180px)] overflow-y-auto justify-center">
           {targetExamQuestion?.paragraph && (
-            <Card className="w-1/2 pt-2 rounded-none shadow-none border-r border-t-0 border-l-0 border-b-0">
-              <CardContent className="p-6 h-full overflow-y-auto">
+            <Card className="w-1/2 min-h-full pt-2 rounded-none shadow-none border-r border-t-0 border-l-0 border-b-0">
+              <CardContent className="p-6">
                 <div className="max-w-2xl mx-auto">
                   <RichTextViewer content={targetExamQuestion.paragraph} />
                 </div>
@@ -448,7 +448,7 @@ export const ExamPage = () => {
             </Card>
           )}
           <Card className="w-1/2 pt-2 rounded-none shadow-none border-none">
-            <CardContent className="p-6 h-full overflow-y-auto">
+            <CardContent className="p-6">
               <div className="max-w-2xl mx-auto">
                 <div className="flex justify-between items-center mb-5">
                   <div className="bg-primary text-primary-foreground rounded-md px-3 py-1">

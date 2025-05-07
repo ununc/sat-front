@@ -149,199 +149,199 @@ export const ExamEdit = ({
             <Button onClick={handleSettingTest}>설정</Button>
           </div>
         </DialogHeader>
-
-        <Card className="mb-4">
-          <CardHeader>
-            <CardTitle>{showEditExam?.name} 학생에게 할당된 시험</CardTitle>
-            <CardDescription>
-              현재 {newStudentExam.length}개의 시험이 할당되었습니다.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="rounded-md border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>제목</TableHead>
-                    <TableHead>설명</TableHead>
-                    <TableHead>난이도</TableHead>
-                    <TableHead className="w-32">횟수</TableHead>
-                    <TableHead className="w-20">삭제</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {selectedExamsWithDetails.map((exam) => {
-                    if (!exam.testDetails) {
-                      return;
-                    }
-                    return (
-                      <TableRow key={exam.testId}>
-                        <TableCell className="font-medium">
-                          {exam.testDetails?.title || "알 수 없는 시험"}
-                        </TableCell>
-                        <TableCell>{exam.testDetails?.description}</TableCell>
-
-                        <TableCell>
-                          <div className="flex items-center">
-                            {Array.from({ length: 5 }).map((_, i) => (
-                              <span
-                                key={i}
-                                className={`w-2 h-2 rounded-full mr-1 ${
-                                  i < exam.testDetails!.level
-                                    ? "bg-primary"
-                                    : "bg-muted"
-                                }`}
-                              />
-                            ))}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center">
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              className="h-8 w-8"
-                              onClick={() =>
-                                updateExamCount(exam.testId, exam.count - 1)
-                              }
-                            >
-                              <Minus className="h-4 w-4" />
-                            </Button>
-                            <Input
-                              type="number"
-                              value={exam.count}
-                              onChange={(e) =>
-                                updateExamCount(
-                                  exam.testId,
-                                  parseInt(e.target.value) || 1
-                                )
-                              }
-                              className="h-8 w-16 mx-2 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                              min="1"
-                            />
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              className="h-8 w-8"
-                              onClick={() =>
-                                updateExamCount(exam.testId, exam.count + 1)
-                              }
-                            >
-                              <Plus className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <Button
-                            variant="destructive"
-                            size="sm"
-                            onClick={() => removeExam(exam.testId)}
-                          >
-                            삭제
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </div>
-          </CardContent>
-        </Card>
-
-        <TFilter
-          setSearchTerm={setSearchTerm}
-          setSearchInTitle={setSearchInTitle}
-          setSearchInDescription={setSearchInDescription}
-          setFilterLevel={setFilterLevel}
-          setSortOrder={setSortOrder}
-          searchTerm={searchTerm}
-          searchInTitle={searchInTitle}
-          filterLevel={filterLevel}
-          searchInDescription={searchInDescription}
-          sortOrder={sortOrder}
-        />
-
-        {/* 사용 가능한 시험 목록 */}
-        <Card>
-          <CardHeader>
-            <CardTitle>시험 목록</CardTitle>
-            <CardDescription>
-              총 {filteredAndSortedTests.length}개의 시험이 있습니다.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="rounded-md border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>제목</TableHead>
-                    <TableHead>설명</TableHead>
-                    <TableHead className="w-28">난이도</TableHead>
-                    <TableHead className="w-28">
-                      <div className="flex items-center">
-                        생성일
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() =>
-                            setSortOrder(sortOrder === "asc" ? "desc" : "asc")
-                          }
-                          className="ml-1 h-5 w-5"
-                        >
-                          <ArrowUpDown className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    </TableHead>
-                    <TableHead className="w-20">추가</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredAndSortedTests.length === 0 ? (
+        <div className="max-h-[70vh] p-1 overflow-y-auto">
+          <Card className="mb-4">
+            <CardHeader>
+              <CardTitle>{showEditExam?.name} 학생에게 할당된 시험</CardTitle>
+              <CardDescription>
+                현재 {newStudentExam.length}개의 시험이 할당되었습니다.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="rounded-md border">
+                <Table>
+                  <TableHeader>
                     <TableRow>
-                      <TableCell colSpan={5} className="h-24 text-center">
-                        검색 결과가 없습니다.
-                      </TableCell>
+                      <TableHead>제목</TableHead>
+                      <TableHead>설명</TableHead>
+                      <TableHead>난이도</TableHead>
+                      <TableHead className="w-32">횟수</TableHead>
+                      <TableHead className="w-20">삭제</TableHead>
                     </TableRow>
-                  ) : (
-                    filteredAndSortedTests.map((test) => (
-                      <TableRow key={test.uid}>
-                        <TableCell className="font-medium">
-                          {test.title}
-                        </TableCell>
-                        <TableCell>{test.description}</TableCell>
-                        <TableCell>
-                          <div className="flex items-center">
-                            {Array.from({ length: 5 }).map((_, i) => (
-                              <span
-                                key={i}
-                                className={`w-2 h-2 rounded-full mr-1 ${
-                                  i < test.level ? "bg-primary" : "bg-muted"
-                                }`}
+                  </TableHeader>
+                  <TableBody>
+                    {selectedExamsWithDetails.map((exam) => {
+                      if (!exam.testDetails) {
+                        return;
+                      }
+                      return (
+                        <TableRow key={exam.testId}>
+                          <TableCell className="font-medium">
+                            {exam.testDetails?.title || "알 수 없는 시험"}
+                          </TableCell>
+                          <TableCell>{exam.testDetails?.description}</TableCell>
+
+                          <TableCell>
+                            <div className="flex items-center">
+                              {Array.from({ length: 5 }).map((_, i) => (
+                                <span
+                                  key={i}
+                                  className={`w-2 h-2 rounded-full mr-1 ${
+                                    i < exam.testDetails!.level
+                                      ? "bg-primary"
+                                      : "bg-muted"
+                                  }`}
+                                />
+                              ))}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center">
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                className="h-8 w-8"
+                                onClick={() =>
+                                  updateExamCount(exam.testId, exam.count - 1)
+                                }
+                              >
+                                <Minus className="h-4 w-4" />
+                              </Button>
+                              <Input
+                                type="number"
+                                value={exam.count}
+                                onChange={(e) =>
+                                  updateExamCount(
+                                    exam.testId,
+                                    parseInt(e.target.value) || 1
+                                  )
+                                }
+                                className="h-8 w-16 mx-2 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                min="1"
                               />
-                            ))}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          {new Date(test.createdAt).toLocaleDateString()}
-                        </TableCell>
-                        <TableCell>
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                className="h-8 w-8"
+                                onClick={() =>
+                                  updateExamCount(exam.testId, exam.count + 1)
+                                }
+                              >
+                                <Plus className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => removeExam(exam.testId)}
+                            >
+                              삭제
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
+
+          <TFilter
+            setSearchTerm={setSearchTerm}
+            setSearchInTitle={setSearchInTitle}
+            setSearchInDescription={setSearchInDescription}
+            setFilterLevel={setFilterLevel}
+            setSortOrder={setSortOrder}
+            searchTerm={searchTerm}
+            searchInTitle={searchInTitle}
+            filterLevel={filterLevel}
+            searchInDescription={searchInDescription}
+            sortOrder={sortOrder}
+          />
+
+          <Card>
+            <CardHeader>
+              <CardTitle>시험 목록</CardTitle>
+              <CardDescription>
+                총 {filteredAndSortedTests.length}개의 시험이 있습니다.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="rounded-md border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>제목</TableHead>
+                      <TableHead>설명</TableHead>
+                      <TableHead className="w-28">난이도</TableHead>
+                      <TableHead className="w-28">
+                        <div className="flex items-center">
+                          생성일
                           <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => addTestToExams(test)}
+                            variant="ghost"
+                            size="icon"
+                            onClick={() =>
+                              setSortOrder(sortOrder === "asc" ? "desc" : "asc")
+                            }
+                            className="ml-1 h-5 w-5"
                           >
-                            추가
+                            <ArrowUpDown className="h-3 w-3" />
                           </Button>
+                        </div>
+                      </TableHead>
+                      <TableHead className="w-20">추가</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredAndSortedTests.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={5} className="h-24 text-center">
+                          검색 결과가 없습니다.
                         </TableCell>
                       </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
-            </div>
-          </CardContent>
-        </Card>
+                    ) : (
+                      filteredAndSortedTests.map((test) => (
+                        <TableRow key={test.uid}>
+                          <TableCell className="font-medium">
+                            {test.title}
+                          </TableCell>
+                          <TableCell>{test.description}</TableCell>
+                          <TableCell>
+                            <div className="flex items-center">
+                              {Array.from({ length: 5 }).map((_, i) => (
+                                <span
+                                  key={i}
+                                  className={`w-2 h-2 rounded-full mr-1 ${
+                                    i < test.level ? "bg-primary" : "bg-muted"
+                                  }`}
+                                />
+                              ))}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            {new Date(test.createdAt).toLocaleDateString()}
+                          </TableCell>
+                          <TableCell>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => addTestToExams(test)}
+                            >
+                              추가
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </DialogContent>
     </Dialog>
   );

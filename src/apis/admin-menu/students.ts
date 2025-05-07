@@ -97,12 +97,14 @@ export const requestResetPasswordStudent = async (
   return data;
 };
 
-export const requestChangePasswordStudent = async (payload: {
-  oldPassword: string;
-  newPassword: string;
-}): Promise<Student> => {
-  const uid = (payload as unknown as Student).uid;
-  const { data } = await student.patch(`/${uid}/change-password`);
+export const requestChangePasswordStudent = async (
+  uid: string,
+  payload: {
+    oldPassword: string;
+    newPassword: string;
+  }
+): Promise<Student> => {
+  const { data } = await student.patch(`/${uid}/change-password`, payload);
   return data;
 };
 

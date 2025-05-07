@@ -37,6 +37,10 @@ export interface TestResult extends CreateTestResultDto {
 
 export interface CompleteResult extends TestResult {
   examInfo: Test;
+  scoreline: {
+    total: number;
+    correct: number;
+  }[];
 }
 
 // Create axios instance
