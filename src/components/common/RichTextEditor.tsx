@@ -621,6 +621,100 @@ export const RichTextEditor = ({
                 >
                   적분
                 </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => insertSampleLatex("\\lim_{x \\to a} f(x)")}
+                >
+                  극한
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    insertSampleLatex(
+                      "\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}"
+                    )
+                  }
+                >
+                  행렬
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => insertSampleLatex("\\vec{v}")}
+                >
+                  벡터
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    insertSampleLatex("\\frac{\\partial f}{\\partial x}")
+                  }
+                >
+                  편미분
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    insertSampleLatex("\\alpha \\beta \\gamma \\delta")
+                  }
+                >
+                  그리스 문자
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => insertSampleLatex("a \\approx b")}
+                >
+                  근사값
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => insertSampleLatex("\\overrightarrow{AB}")}
+                >
+                  방향 벡터
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => insertSampleLatex("\\prod_{i=1}^{n} x_i")}
+                >
+                  곱셈 기호
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    insertSampleLatex(
+                      "P(A|B) = \\frac{P(B|A) \\cdot P(A)}{P(B)}"
+                    )
+                  }
+                >
+                  베이즈 정리
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    insertSampleLatex("\\binom{n}{k} = \\frac{n!}{k!(n-k)!}")
+                  }
+                >
+                  이항 계수
+                </Button>
               </div>
             </div>
 

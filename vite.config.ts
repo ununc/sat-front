@@ -14,8 +14,8 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        // target: "https://hcsb.synology.me:6557",
-        target: "http://localhost:3210",
+        target: "https://hcsb.synology.me:6557",
+        // target: "http://localhost:3210",
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, "api"),
       },
